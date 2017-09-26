@@ -70,7 +70,7 @@
     + <img src="https://latex.codecogs.com/gif.latex?-%20&#x5C;alpha%20&#x5C;triangledown%20L(W)"/> : 한 번 반대 방향으로 갈 때 <img src="https://latex.codecogs.com/gif.latex?&#x5C;alpha"/>만큼 이동한다
     + <img src="https://latex.codecogs.com/gif.latex?W^{new}"/> : 현재 위치에서 현재 위치에서의 기울기 벡터만큼 반대 방향으로 이동한 곳이 새로운 위치이다 (= 파라미터 갱신)
   
-+ <img src="https://latex.codecogs.com/gif.latex?&#x5C;%20&#x5C;%20&#x5C;%20&#x5C;%20&#x5C;%20(9)%20&#x5C;%20&#x5C;triangledown%20L(W)%20=%20&#x5C;begin{pmatrix}&#x5C;frac{&#x5C;partial%20L}{&#x5C;partial%20w_0}(W)%20&#x5C;&#x5C;&#x5C;cdot%20&#x5C;&#x5C;&#x5C;cdot%20&#x5C;&#x5C;&#x5C;cdot%20&#x5C;&#x5C;&#x5C;frac{&#x5C;partial%20L}{&#x5C;partial%20w_4}(W)&#x5C;end{pmatrix}"/>
++ <img src="https://latex.codecogs.com/gif.latex?&#x5C;%20&#x5C;%20&#x5C;%20&#x5C;%20&#x5C;%20(9)%20&#x5C;%20&#x5C;triangledown%20L(W)%20=%20&#x5C;begin{pmatrix}&#x5C;frac{&#x5C;partial%20L}{&#x5C;partial%20w_0}(W)%20&#x5C;&#x5C;&#x5C;vdots%20&#x5C;&#x5C;&#x5C;frac{&#x5C;partial%20L}{&#x5C;partial%20w_4}(W)&#x5C;end{pmatrix}"/>
   
 이때 식 (8)에서 파라미터를 갱신할 때마다 그 점에서의 기울기 벡터 값을 식 (9)로 다시 계산한다는 점에 주의한다.
 이렇게 '**현재 파라미터의 값에 대해 기울기 벡터를 계산하고, 그 반대 방향으로 파라미터를 수정하는 알고리즘**'을 '**경사 하강법(gradient descent**)'이라고 한다.
@@ -93,6 +93,84 @@
   
   
 + 확률을 이용해서 모델을 만들면, 오차 함수로 자연스럽게 최우추정법(MLE)을 사용할 수 있다.
+  
+### 02 로지스틱 회귀를 이용한 이항 분류기
+  
+  
+#### 데이터 모델링 1단계 : 모델 방정식 세우기 (1)
+  
+  
+두 가지 검사 <img src="https://latex.codecogs.com/gif.latex?x_1,%20x_2"/>를 토대로 바이러스 감염, 비감염 판정을 내리는 training data가 있다.
+training data를 시각화하면 <img src="https://latex.codecogs.com/gif.latex?x_1,%20x_2"/>축을 가진 그래프에서 감염(o), 비감염(x)을 나타내는 데이터 포인트가 찍힌다.
+우리의 목적은 데이터의 분류이므로 데이터 포인트 (o)와 (x)를 분리하는 직선을 그을 수 있다.
+두 데이터의 경계를 나타내는 이 직선을 linear classifier라고 한다.
+linear classifier는 분류 문제에서 데이터의 경계를 나눠서, 어떤 데이터가 어느 클래스에 속하는지 설명해주므로 '모델'이 된다.
+모델은 다음과 같이 수식으로 나타낼 수 있다.
+  
++ <img src="https://latex.codecogs.com/gif.latex?&#x5C;%20&#x5C;%20&#x5C;%20&#x5C;%20&#x5C;%20(2.1)%20&#x5C;%20f(x_1,%20x_2)%20=%20w_0%20+%20w_1x_1%20+%20w_2x_2"/>
+  
+#### 데이터 모델링 1단계 : 모델 방정식 세우기 (2)
+  
+  
+우리의 목표는 새로운 검사 결과 <img src="https://latex.codecogs.com/gif.latex?(x_1,%20x_2)"/>가 나왔을 때 이 환자가 실제로 감염되었는지 판정하는 것이다.
+<img src="https://latex.codecogs.com/gif.latex?x_1,%20x_2"/>축을 가진 그래프에 새로운 환자의 데이터가 찍혔다고 해보자.
+이를 단순하게 감염(o) 또는 비감염(x)으로 분류하는 것이 아니라 이 환자가 바이러스에 감염되었을 확률을 구하고자 한다.
+<img src="https://latex.codecogs.com/gif.latex?f(x_1,x_2)"/>의 값은 <img src="https://latex.codecogs.com/gif.latex?&#x5C;pm%20&#x5C;infty"/>를 향해 변화하므로 확률 값으로 적절하지 않다.
+<img src="https://latex.codecogs.com/gif.latex?f(x_1,x_2)"/>의 범위를 확률의 범위 0~1 사이로 맞추기 위해 시그모이드 함수에 대입한다.
+  
++ <img src="https://latex.codecogs.com/gif.latex?&#x5C;%20&#x5C;%20&#x5C;%20&#x5C;%20&#x5C;%20(2.2)%20&#x5C;%20-&#x5C;infty%20&lt;%20f(x_1,x_2)%20&lt;%20+&#x5C;infty"/>
+  
++ <img src="https://latex.codecogs.com/gif.latex?&#x5C;%20&#x5C;%20&#x5C;%20&#x5C;%20&#x5C;%20(2.3)%20&#x5C;%200%20&lt;%20&#x5C;sigma%20(x)%20=%20&#x5C;frac{1}{1%20+%20e^{-x}}%20&lt;%201"/>
+  
++ <img src="https://latex.codecogs.com/gif.latex?&#x5C;%20&#x5C;%20&#x5C;%20&#x5C;%20&#x5C;%20(2.4)%20&#x5C;%200%20&lt;%20&#x5C;sigma%20(f(x_1,%20x_2))%20&lt;%201"/>
+  
+결국 우리의 모델은 다음과 같이 표현된다.
+  
++ <img src="https://latex.codecogs.com/gif.latex?&#x5C;%20&#x5C;%20&#x5C;%20&#x5C;%20&#x5C;%20(2.5)%20&#x5C;%20P(x_1,%20x_2)%20=%20&#x5C;sigma%20(f(x_1,%20x_2))%20=%20&#x5C;frac{1}{1%20+%20e^{-(w_0%20+%20w_1x_1%20+%20w_2x_2)}}"/>
+  
+#### 데이터 모델링 2단계 : 오차 함수 준비 (1)
+  
+  
+"확률을 이용해서 예측 모델을 만들면, 파라미터의 좋고 나쁨을 평가하는 오차 함수로 자연스럽게 최우추정법(MLE)를 사용할 수 있다는 이점이 있다."
+식 (2.5)에서 만든 모델에 포함된 파라미터의 좋고 나쁨을 어떻게 판단할 수 있을까?
+주어진 training data를 잘 맞히는지 알아보면 된다.
+엄밀히 말하자면, 수많은 parameter 조합 중에서 training data를 예측할 확률이 가장 높은 parameter를 선택하면 된다.
+이와 같이 주어진 데이터를 바르게 예측할 확률을 최대화하는 것을 최우추정법(Maximum Likelihood Estimation)이라고 한다.
+  
+> **Note**: 모델 방정식에 포함된 parameter가 가질 수 있는 값은 무한 개이다. 즉, 가능한 모델의 개수 또한 무한 개이다. 최우추정법에서는 모델 여러 개 중에서 주어진 데이터를 예측할 확률이 가장 높은 모델을 선택하는 알고리즘이다.
+  
+트레이닝 데이터 N개를 표현하면 식 (2.6)과 같다.
+<img src="https://latex.codecogs.com/gif.latex?n"/>번째 데이터 <img src="https://latex.codecogs.com/gif.latex?(x_{1_{n}},%20x_{2_{n}})"/>의 바이러스 감염 여부를 <img src="https://latex.codecogs.com/gif.latex?t_n%20&#x5C;in%20&#x5C;{0,%201&#x5C;}"/>이라고 하자. <img src="https://latex.codecogs.com/gif.latex?n"/>번째 데이터를 바르게 예측할 확률을 <img src="https://latex.codecogs.com/gif.latex?P_n"/>이라고 할 때 식 (2.7)과 식 (2.8)이 성립한다.
+  
++ <img src="https://latex.codecogs.com/gif.latex?&#x5C;%20&#x5C;%20&#x5C;%20&#x5C;%20&#x5C;%20(2.6)%20&#x5C;%20(x_{1_{1}},%20x_{2_{1}}),%20(x_{1_{2}},%20x_{2_{2}}),%20&#x5C;cdot%20&#x5C;cdot%20&#x5C;cdot,%20(x_{1_{N}},%20x_{2_{N}})"/>
+  
++ <img src="https://latex.codecogs.com/gif.latex?&#x5C;%20&#x5C;%20&#x5C;%20&#x5C;%20&#x5C;%20(2.7)%20&#x5C;%20[%20&#x5C;begin{array}{ll}%20t_n=1%20:%20P_n%20=%20P(x_{1_{n}},%20x_{2_{n}})%20&#x5C;&#x5C;t_n=0%20:%20P_n%20=%201%20-%20P(x_{1_{n}},%20x_{2_{n}})&#x5C;end{array}"/>
+  
++ <img src="https://latex.codecogs.com/gif.latex?&#x5C;%20&#x5C;%20&#x5C;%20&#x5C;%20&#x5C;%20(2.8)%20&#x5C;%20P_n%20=%20&#x5C;{%20P(x_{1_{n}},%20x_{2_{n}})%20&#x5C;}^{t_n}%20&#x5C;{%201%20-%20P(x_{1_{n}},%20x_{2_{n}})%20&#x5C;}^{1-t_n}"/>
+  
+<img src="https://latex.codecogs.com/gif.latex?n"/>번째 데이터가 아니라 <img src="https://latex.codecogs.com/gif.latex?N"/>개 데이터 모두 정답일 확률 <img src="https://latex.codecogs.com/gif.latex?P"/>를 계산해보자.
+이는 각 데이터를 바르게 예측학 확률의 곱셈으로 계산할 수 있다.
+식 (2.10)이 우리가 만든 모델 (2.5)의 우도 함수이자 오차 함수이다.
+  
++ <img src="https://latex.codecogs.com/gif.latex?&#x5C;%20&#x5C;%20&#x5C;%20&#x5C;%20&#x5C;%20(2.9)%20&#x5C;%20P%20=%20P_1%20&#x5C;times%20P_2%20&#x5C;times%20&#x5C;cdots%20&#x5C;times%20P_N%20=%20&#x5C;Pi_{n=1}^{N}P_n"/>
++ <img src="https://latex.codecogs.com/gif.latex?&#x5C;%20&#x5C;%20&#x5C;%20&#x5C;%20&#x5C;%20(2.10)%20&#x5C;%20P%20=%20&#x5C;Pi_{n=1}^{N}&#x5C;{%20P(x_{1_{n}},%20x_{2_{n}})%20&#x5C;}^{t_n}%20&#x5C;{%201%20-%20P(x_{1_{n}},%20x_{2_{n}})%20&#x5C;}^{1-t_n}"/>
+  
+#### 데이터 모델링 2단계 : 오차 함수 준비 (2)
+  
+  
+텐서플로로 계산할 경우 식 (2.10)과 같이 곱셈을 대량으로 포함하는 수식은 계산 효율이 좋지 않다.
+덧셈으로 대체하려면 오차 함수에 <img src="https://latex.codecogs.com/gif.latex?&#x5C;log"/>를 취하면 되는데, <img src="https://latex.codecogs.com/gif.latex?P"/>는 클수록 좋지만 오차 함수의 값은 작으면 좋으므로 <img src="https://latex.codecogs.com/gif.latex?-&#x5C;log"/>를 취해준다.
+  
++ <img src="https://latex.codecogs.com/gif.latex?&#x5C;%20&#x5C;%20&#x5C;%20&#x5C;%20&#x5C;%20(2.11)%20&#x5C;%20L%20=%20-%20&#x5C;log%20P"/>
++ <img src="https://latex.codecogs.com/gif.latex?&#x5C;%20&#x5C;%20&#x5C;%20&#x5C;%20&#x5C;%20(2.12)%20&#x5C;%20L%20=%20-%20&#x5C;log%20&#x5C;Pi_{n=1}^{N}&#x5C;{%20P(x_{1_{n}},%20x_{2_{n}})%20&#x5C;}^{t_n}%20&#x5C;{%201%20-%20P(x_{1_{n}},%20x_{2_{n}})%20&#x5C;}^{1-t_n}"/>
++ <img src="https://latex.codecogs.com/gif.latex?&#x5C;%20&#x5C;%20&#x5C;%20&#x5C;%20&#x5C;%20(2.13)%20&#x5C;%20L%20=%20-%20&#x5C;Sigma_{n=1}^{N}%20[t_n%20&#x5C;log%20P(x_{1_{n}},%20x_{2_{n}})%20+%20(1%20-%20t_n)%20&#x5C;log%20&#x5C;{%201%20-%20P(x_{1_{n}},%20x_{2_{n}})%20&#x5C;}]"/>
+  
+이렇게 해서 오차 함수가 식 (2.13)으로 완성되었다.
+  
+> **Note**: 로그함수를 취할 수 있는 이유는 우리가 찾는 것은 P의 구체적인 값이 아니라 P를 최대로 하는 것이기 때문이다. 로그함수는 단조 증가하는 함수이므로 P를 최대로 하는 것과 -logP를 최소로 하는 것은 동치가 된다.
+  
+## #
+  
   
 `#inProgress : p.56`
   
@@ -214,7 +292,7 @@
     + <img src="https://latex.codecogs.com/gif.latex?-%20&#x5C;alpha%20&#x5C;triangledown%20L(W)"/> : 한 번 반대 방향으로 갈 때 <img src="https://latex.codecogs.com/gif.latex?&#x5C;alpha"/>만큼 이동한다
     + <img src="https://latex.codecogs.com/gif.latex?W^{new}"/> : 현재 위치에서 현재 위치에서의 기울기 벡터만큼 반대 방향으로 이동한 곳이 새로운 위치이다 (= 파라미터 갱신)
   
-+ <img src="https://latex.codecogs.com/gif.latex?&#x5C;%20&#x5C;%20&#x5C;%20&#x5C;%20&#x5C;%20(9)%20&#x5C;%20&#x5C;triangledown%20L(W)%20=%20&#x5C;begin{pmatrix}&#x5C;frac{&#x5C;partial%20L}{&#x5C;partial%20w_0}(W)%20&#x5C;&#x5C;&#x5C;cdot%20&#x5C;&#x5C;&#x5C;cdot%20&#x5C;&#x5C;&#x5C;cdot%20&#x5C;&#x5C;&#x5C;frac{&#x5C;partial%20L}{&#x5C;partial%20w_4}(W)&#x5C;end{pmatrix}"/>
++ <img src="https://latex.codecogs.com/gif.latex?&#x5C;%20&#x5C;%20&#x5C;%20&#x5C;%20&#x5C;%20(9)%20&#x5C;%20&#x5C;triangledown%20L(W)%20=%20&#x5C;begin{pmatrix}&#x5C;frac{&#x5C;partial%20L}{&#x5C;partial%20w_0}(W)%20&#x5C;&#x5C;&#x5C;vdots%20&#x5C;&#x5C;&#x5C;frac{&#x5C;partial%20L}{&#x5C;partial%20w_4}(W)&#x5C;end{pmatrix}"/>
   
 이때 식 (8)에서 파라미터를 갱신할 때마다 그 점에서의 기울기 벡터 값을 식 (9)로 다시 계산한다는 점에 주의한다.
 이렇게 현재 파라미터의 값에 대해 기울기 벡터를 계산하고, 그 반대 방향으로 파라미터를 수정하는 알고리즘을 '**경사 하강법(gradient descent**)'이라고 한다.
